@@ -61,7 +61,7 @@ export class HomePage {
     this.loadMovies();
   }
 
-  public loadMovies(event?: InfiniteScrollCustomEvent) {
+  public loadMovies(event?: InfiniteScrollCustomEvent): void {
     this.error = null;
 
     if (!event) {
@@ -93,7 +93,7 @@ export class HomePage {
       });
   }
 
-  public loadMore(event: InfiniteScrollCustomEvent) {
+  public loadMore(event: InfiniteScrollCustomEvent): void {
     this.currentPage++;
     this.loadMovies(event);
   }

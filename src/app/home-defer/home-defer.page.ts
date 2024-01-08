@@ -60,7 +60,7 @@ export class HomeDeferPage implements OnInit {
     this.loadMovies();
   }
 
-  public async loadMovies(event?: InfiniteScrollCustomEvent) {
+  public async loadMovies(event?: InfiniteScrollCustomEvent): Promise<void> {
     this.error = null;
 
     if (!event) {
@@ -92,7 +92,7 @@ export class HomeDeferPage implements OnInit {
       });
   }
 
-  loadMore(event: InfiniteScrollCustomEvent) {
+  public loadMore(event: InfiniteScrollCustomEvent): void {
     this.currentPage++;
     this.loadMovies(event);
   }
