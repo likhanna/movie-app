@@ -55,20 +55,17 @@ export class HomeDeferPage implements OnInit {
   public error = null;
   public dummyArray = new Array(5);
 
-  // Load the first page of movies during component initialization
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loadMovies();
   }
 
-  async loadMovies(event?: InfiniteScrollCustomEvent) {
+  public async loadMovies(event?: InfiniteScrollCustomEvent) {
     this.error = null;
 
-    // Only show loading indicator on initial load
     if (!event) {
       this.isLoading = true;
     }
 
-    // Get the next page of movies from the MovieService
     this.movieService
       .getTopRatedMovies(this.currentPage)
       .pipe(
@@ -82,13 +79,10 @@ export class HomeDeferPage implements OnInit {
       )
       .subscribe({
         next: (res) => {
-          // Append the results to our movies array
           this.movies.push(...res.results);
 
-          // Resolve the infinite scroll promise to tell Ionic that we are done
           event?.target.complete();
 
-          // Disable the infinite scroll when we reach the end of the list
           if (event) {
             event.target.disabled = res.total_pages === this.currentPage;
           }
@@ -96,7 +90,6 @@ export class HomeDeferPage implements OnInit {
       });
   }
 
-  // This method is called by the infinite scroll event handler
   loadMore(event: InfiniteScrollCustomEvent) {
     this.currentPage++;
     this.loadMovies(event);
