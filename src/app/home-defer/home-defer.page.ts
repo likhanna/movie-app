@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -20,6 +20,7 @@ import { MovieService } from '../services/movie.service';
 import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { catchError, finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home-defer',
@@ -46,14 +47,14 @@ import { catchError, finalize } from 'rxjs';
   ],
 })
 export class HomeDeferPage implements OnInit {
-  private movieService = inject(MovieService);
-
-  private currentPage = 1;
   public movies: any[] = [];
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
   public isLoading = true;
   public error = null;
   public dummyArray = new Array(5);
+  private movieService = inject(MovieService);
+  private currentPage = 1;
+  private destroyRef = inject(DestroyRef);
 
   public ngOnInit(): void {
     this.loadMovies();
@@ -75,7 +76,8 @@ export class HomeDeferPage implements OnInit {
         catchError((err: any) => {
           this.error = err.error.status_message;
           return [];
-        })
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (res) => {

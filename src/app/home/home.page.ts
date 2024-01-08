@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -21,6 +21,7 @@ import { catchError, finalize } from 'rxjs';
 import { MovieResult } from '../services/interfaces';
 import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home',
@@ -54,6 +55,7 @@ export class HomePage {
   public movies: MovieResult[] = [];
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
   public dummyArray = new Array(8);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadMovies();
@@ -75,7 +77,8 @@ export class HomePage {
         catchError((err: any) => {
           this.error = err.error.status_message;
           return [];
-        })
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (res) => {

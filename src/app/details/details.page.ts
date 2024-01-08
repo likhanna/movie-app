@@ -1,7 +1,7 @@
 import {
   Component,
+  DestroyRef,
   Input,
-  OnInit,
   WritableSignal,
   inject,
   signal,
@@ -30,6 +30,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-details',
@@ -57,17 +58,21 @@ import {
   ],
 })
 export class DetailsPage {
-  private movieService = inject(MovieService);
   public movie: WritableSignal<MovieResult | null> = signal<MovieResult | null>(
     null
   );
   public imageBaseUrl = 'https://image.tmdb.org/t/p';
+  private movieService = inject(MovieService);
+  private destroyRef = inject(DestroyRef);
 
   @Input()
   set id(movieId: string) {
-    this.movieService.getMovieDetails(movieId).subscribe((movie) => {
-      this.movie.set(movie);
-    });
+    this.movieService
+      .getMovieDetails(movieId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((movie) => {
+        this.movie.set(movie);
+      });
   }
 
   constructor() {
